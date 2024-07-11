@@ -36,8 +36,7 @@
               t
               nil
               nil))))
-    (print
-     (list host text))))
+    (list host text)))
 
 (defvar *swanks* (make-hash-table :test 'equal))
 
