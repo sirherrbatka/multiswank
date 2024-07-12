@@ -2,6 +2,8 @@
   (:use #:cl)
   (:import-from #:alexandria
                 #:with-gensyms)
+  (:import-from #:serapeum
+                #:trim-whitespace)
   (:export #:define-swanks))
 
 (cl:in-package #:multiswank)
@@ -17,7 +19,7 @@
   (let* ((port nil)
          (host (make-string-output-stream))
          (last-char (read-until stream '(#\newline #\:) host)))
-    (setf host (get-output-stream-string host))
+    (setf host (trim-whitespace (get-output-stream-string host)))
     (when (eql last-char #\:)
       (let ((port-stream (make-string-output-stream)))
         (read-until stream '(#\newline) port-stream)
@@ -68,7 +70,6 @@
            (when (null spec)
              (error "No ~a SWANK endpoint defined!" ,(string-upcase host)))
            (destructuring-bind (host port) spec
-             (usocket:socket-connect host port)
              (swank-client:with-slime-connection (connection host port)
                (swank-client:slime-eval ',(read-from-string text) connection))))
         `(swank-client:with-slime-connection (connection ,host ,port)
